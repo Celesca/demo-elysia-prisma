@@ -10,8 +10,14 @@ import {
 const postController = new Elysia({ prefix: "/posts" })
   .model({
     "post.body": t.Object({
-      title: t.String(),
-      content: t.String(),
+      title: t.String({
+        minLength: 3,
+        maxLength: 50,
+      }),
+      content: t.String({
+        minLength: 3,
+        maxLength: 50,
+      }),
     }),
     "post.id": t.Object({
       id: t.Numeric(),
@@ -26,8 +32,26 @@ const postController = new Elysia({ prefix: "/posts" })
   })
   .patch("/:id", ({ params: { id }, body }) => updatePost(id, body), {
     params: "post.id",
-    body: "post.body",
-  })
+    body : t.Object({
+        title: t.Optional(
+            t.String({
+                minLength: 3,
+                maxLength: 50,
+            })
+        ),
+        content: t.Optional(
+            t.String({
+                minLength: 3,
+                maxLength: 50,
+            
+            })
+        ),
+    }, {
+        minProperties: 1,
+    }
+)
+
+})
   .delete("/", ({ body }) => deletePost(body), {
     body: t.Object({
         id: t.Numeric()
