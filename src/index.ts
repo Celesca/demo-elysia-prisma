@@ -3,10 +3,11 @@ import { PrismaClient } from "@prisma/client";
 import { swagger } from '@elysiajs/swagger';
 import { version, plugin } from './version';
 import { SignDTO } from "./models/admin.model";
+import postController from "./post/PostController";
 
 const db = new PrismaClient();
 
-export const app = new Elysia()
+const app = new Elysia()
   .use(swagger())
   .use(version("1.0.0"))
   .use(plugin)
@@ -21,14 +22,6 @@ export const app = new Elysia()
   })
   .post(
     "/sign-up",
-    async ({ body }) =>
-      db.user.create({
-        data: body,
-        select: {
-          id: true,
-          username: true,
-        }
-      }),
     {
       body: 'user.sign',
       response: t.Object({
@@ -84,6 +77,10 @@ export const app = new Elysia()
   })
   .listen(3000);
 
+app.group('/api', (app) => app.use(postController));
+
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
+
+export default app;
