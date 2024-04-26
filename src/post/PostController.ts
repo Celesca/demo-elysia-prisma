@@ -1,8 +1,20 @@
-import { Elysia } from 'elysia';
+import { Elysia, t } from 'elysia';
+import {
+    createPost,
+    getPost,
+    getPosts,
+    updatePost,
+    deletePost
+} from './PostHandlers';
 
 const postController = new Elysia({ prefix: '/posts'})
-    .get('/', () => 'get all posts')
-    .get('/:id', () => 'get post by id')
+    .get('/', () => getPosts())
+    .get('/:id', 
+    ({ params: { id } }) => getPost(id), {
+        params: t.Object({
+            id: t.Numeric()
+        })
+    })
     .post('/', () => 'create post')
     .patch('/:id', () => 'update post')
     .delete('/', () => 'delete post');
