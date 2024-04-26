@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { PrismaClient } from "@prisma/client";
 import { swagger } from '@elysiajs/swagger';
 import { version, plugin } from './version';
+import { SignDTO } from "./models/admin.model";
 
 const db = new PrismaClient();
 
@@ -9,6 +10,7 @@ const app = new Elysia()
   .use(swagger())
   .use(version("1.0.0"))
   .use(plugin)
+  .use(SignDTO)
   .model({
     'user.sign': t.Object({
       username: t.String(),
@@ -42,7 +44,9 @@ const app = new Elysia()
     }),
     query: t.Object({
       name: t.String(),
-      alias: t.Optional(t.String())
+      alias: t.Optional(t.String()),
+    }, {
+      error: "Invalid Query UwU"
     }),
     body: t.Object({
       name: t.String()
@@ -58,6 +62,13 @@ const app = new Elysia()
       400: t.Number()
     }
   })
+
+  // Reference Model Validation
+  .post('/sign-in' , ({ body }) => body, {
+    body: 'sign',
+    resposne: 'sign'
+  })
+  
   .get("/healthCheck", async () => ({ status: "ok" }))
   .get('/id/:id', ({ params: { id }}) => id, {
     params: t.Object({
