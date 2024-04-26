@@ -1,9 +1,11 @@
 import { Elysia, t } from "elysia";
 import { PrismaClient } from "@prisma/client";
+import { swagger } from '@elysiajs/swagger';
 
 const db = new PrismaClient();
 
 const app = new Elysia()
+  .use(swagger())
   .model({
     'user.sign': t.Object({
       username: t.String(),
@@ -17,6 +19,10 @@ const app = new Elysia()
     async ({ body }) =>
       db.user.create({
         data: body,
+        select: {
+          id: true,
+          username: true,
+        }
       }),
     {
       error({ code }) {
@@ -28,6 +34,10 @@ const app = new Elysia()
         }
       },
       body: 'user.sign',
+      response: t.Object({
+        id: t.Number(),
+        username: t.String()
+      })
     }
   )
   .get("/healthCheck", async () => ({ status: "ok" }))
