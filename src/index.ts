@@ -1,11 +1,14 @@
 import { Elysia, t } from "elysia";
 import { PrismaClient } from "@prisma/client";
 import { swagger } from '@elysiajs/swagger';
+import { version, plugin } from './version';
 
 const db = new PrismaClient();
 
 const app = new Elysia()
   .use(swagger())
+  .use(version("1.0.0"))
+  .use(plugin)
   .model({
     'user.sign': t.Object({
       username: t.String(),
@@ -25,14 +28,6 @@ const app = new Elysia()
         }
       }),
     {
-      error({ code }) {
-        switch (code) {
-          case 'P2002':
-            return {
-              error: "Username must be unique",
-            };
-        }
-      },
       body: 'user.sign',
       response: t.Object({
         id: t.Number(),
@@ -40,7 +35,27 @@ const app = new Elysia()
       })
     }
   )
+  .post('/name/:id', () => "Hello World", {
+    query: t.Object({
+      name: t.String()
+    }),
+    body: t.Object({
+      name: t.String()
+    }),
+    params: t.Object({
+      id: t.Numeric()
+    })
+  })
   .get("/healthCheck", async () => ({ status: "ok" }))
+  .get('/id/:id', ({ params: { id }}) => id, {
+    params: t.Object({
+      id: t.Numeric()
+    })
+  })
+  .get('/counter', ({ store: { counter } }) => {
+      return counter;
+
+  })
   .onError(({ code }) => {
     if (code === "NOT_FOUND") return "Route not found :(";
   })
