@@ -6,7 +6,7 @@ import { SignDTO } from "./models/admin.model";
 
 const db = new PrismaClient();
 
-const app = new Elysia()
+export const app = new Elysia()
   .use(swagger())
   .use(version("1.0.0"))
   .use(plugin)
