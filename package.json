@@ -17,5 +17,8 @@
   "module": "src/index.js",
   "bun-create": {
     "start": "bun run src/index.ts"
+  },
+  "prisma": {
+    "seed": "node scripts/seed.js"
   }
 }
