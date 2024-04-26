@@ -35,16 +35,28 @@ const app = new Elysia()
       })
     }
   )
-  .post('/name/:id', () => "Hello World", {
+  // Validation Path
+  .post('/name/:id', ({ cookie }) => cookie + "Hello World", {
+    cookie: t.Object({
+      session: t.String()
+    }),
     query: t.Object({
-      name: t.String()
+      name: t.String(),
+      alias: t.Optional(t.String())
     }),
     body: t.Object({
       name: t.String()
     }),
     params: t.Object({
       id: t.Numeric()
-    })
+    }),
+    headers: t.Object({
+      authorization: t.String()
+    }),
+    response: {
+      200: t.String(),
+      400: t.Number()
+    }
   })
   .get("/healthCheck", async () => ({ status: "ok" }))
   .get('/id/:id', ({ params: { id }}) => id, {
